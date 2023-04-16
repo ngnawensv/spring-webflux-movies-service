@@ -2,6 +2,7 @@ package com.belrose.moviesservice.client;
 
 import com.belrose.moviesservice.domain.MovieInfo;
 import com.belrose.moviesservice.exception.MovieInfoClientException;
+import com.belrose.moviesservice.exception.MovieInfoServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,12 @@ public class MoviesInfoRestClient {
           return clientResponse.bodyToMono(String.class)
               .flatMap(responseMessage -> Mono.error(new MovieInfoClientException(responseMessage,
                   clientResponse.statusCode().value())));
+        })
+
+        .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+          log.info("Status code is : {}",clientResponse.statusCode().value());
+          return clientResponse.bodyToMono(String.class)
+              .flatMap(responseMessage -> Mono.error(new MovieInfoServerException("Server Exception in  MoviesInfoService "+ responseMessage)));
         })
         .bodyToMono(MovieInfo.class)
         .log();
