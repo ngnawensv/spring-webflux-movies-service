@@ -3,8 +3,8 @@ package com.belrose.moviesservice.exception;
 public class ReviewsServerException extends RuntimeException{
   private  String message;
 
-  public ReviewsServerException(String message, String message1) {
+  public ReviewsServerException(String message) {
     super(message);
-    this.message = message1;
+    this.message = message;
   }
 }
